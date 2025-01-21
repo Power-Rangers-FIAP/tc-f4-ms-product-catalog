@@ -1,0 +1,318 @@
+openapi: 3.0.3
+info:
+  title: API Products
+  description: |-
+    Api to register Products and manage your stock - FIAP Phase 4 Tech Challenge
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://localhost:8080
+    description: Local server
+
+tags:
+  - name: Product
+    description: all about Products
+  - name: Stock
+    description: all about stock
+  
+paths:
+  /products:
+    post:
+      tags:
+        - Product
+      summary: Add a new product
+      description: adds a new product with its initial stock quantity
+      operationId: registerProduct
+      requestBody:
+        description: create a new product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: invalid entry
+        '422':
+          description: validation exception
+    get:
+      tags:
+        - Product
+      summary: Find all products
+      description: Returns a page of Products with a part of its name or description, or all Products if there is no filter
+      operationId: findAllProducts
+      parameters:
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+            default: 0
+            example: 1
+        - name: PerPage
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+            example: 10
+        - name: name
+          in: query
+          description: Full name or part of it
+          required: false
+          schema:
+            type: string
+            example: orange
+        - name: description
+          in: query
+          description: complete description or part of it
+          required: false
+          schema:
+            type: string
+            example: sweet
+        - name: active
+          in: query
+          description: >
+            product status:
+              * `true` - All active Products
+              * `false` - All inactive products
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedProduct'
+
+  /products/{id}:
+    get:
+      tags:
+        - Product
+      summary: Find product by ID
+      description: Returns a single product by its ID
+      operationId: findProductById
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid ID provided
+        '404':
+          description: Product not found
+    patch:
+      tags:
+        - Product
+      summary: Update product name and description
+      description: Update a product by its ID
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existing product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProduct'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+        '422':
+          description: validation exception
+
+  /products/activate/{id}:
+    get:
+      tags:
+        - Product
+      summary: Activate a product by ID
+      description: Activate a deactivated product by its ID
+      operationId: activateProductById
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+        '422':
+          description: validation exception
+
+  /products/deactivate/{id}:
+    get:
+      tags:
+        - Product
+      summary: Deactivate a product by ID
+      description: Deactivate a product activated by your ID
+      operationId: deactivateProductById
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+        '422':
+          description: validation exception
+  
+  /stock/{id}:
+    get:
+      tags:
+        - Stock
+      summary: Increase stock by product ID
+      description: Increases stock quantity by product ID
+      operationId: updateStock
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          description: Quantity to add to stock
+          required: true
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+            maximum: 100
+            example: 7
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: number
+          format: int64
+          description: Product ID
+          example: 55L
+        name:
+          type: string
+          description: Product name
+          example: Laranja
+        description:
+          type: string
+          description: Product description
+          example: Argentine sweet orange
+        amount:
+          type: integer
+          format: int32
+          description: Number of Products available
+          example: 404
+        active:
+          type: boolean
+          description: Indicator whether product is active or not
+          example: true
+    PagedProduct:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        perPage:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          format: int64
+          example: 100
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+    CreateProduct:
+      required:
+        - name
+        - description
+        - amount
+      type: object
+      properties:
+        name:
+          type: string
+          description: Product name
+          example: Orange
+        description:
+          type: string
+          description: Product description
+          example: Argentine sweet orange
+        amount:
+          type: integer
+          format: int32
+          description: Number of Products available
+          example: 404
+    UpdateProduct:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Product name
+          example: Orange
+        description:
+          type: string
+          description: Product description
+          example: Argentine sweet orange

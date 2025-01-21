@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: tech-challenge-f4-ms-produto
+  datasource:
+    hikari:
+      pool-name: tech-challenge-f4-ms-produto
+      maximum-pool-size: 5
+      connection-test-query: SELECT 1
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  cloud:
+    function:
+      web:
+        path: /api
+
+server:
+  port: 8081
+
+load:
+  input-path: C:\Users\Gabriel\Downloads\loads
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework: INFO
+    br:
+      com:
+        pupposoft:
+          poc:
+            cloudstream: TRACE
