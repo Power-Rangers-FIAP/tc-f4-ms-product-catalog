@@ -16,7 +16,9 @@ tags:
     description: all about Products
   - name: Stock
     description: all about stock
-  
+  - name: Load
+    description: all about load
+
 paths:
   /products:
     post:
@@ -58,7 +60,7 @@ paths:
             type: integer
             default: 0
             example: 1
-        - name: PerPage
+        - name: perPage
           in: query
           description: Number of items per page
           required: false
@@ -111,7 +113,8 @@ paths:
           description: Product ID
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Successful operation
@@ -135,7 +138,8 @@ paths:
           description: Product ID
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       requestBody:
         description: Update an existing product
         content:
@@ -168,7 +172,8 @@ paths:
           description: Product ID
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Successful operation
@@ -194,7 +199,8 @@ paths:
           description: Product ID
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
       responses:
         '200':
           description: Successful operation
@@ -206,9 +212,96 @@ paths:
           description: Product not found
         '422':
           description: validation exception
-  
+
+  /load:
+    post:
+      tags:
+        - Load
+      summary: Carry out a load of products
+      description: performs a product load from the loaded .csv file
+      operationId: loadProducts
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  required: true
+      responses:
+        '200':
+          description: Successful operation
+
+  /load/job:
+    post:
+      tags:
+        - Load
+      summary: Carry out a load of products by job
+      description: performs a product load from the loaded .csv file by job programming
+      operationId: scheduleJob
+      parameters:
+        - name: dateTime
+          in: query
+          description: Date and time to schedule the job
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: 2021-10-10T10:00:00.00Z
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: .csv file with products data
+                  format: binary
+                  required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoadJob'
+
+  /load/job/{id}:
+    delete:
+      tags:
+        - Load
+      summary: Cancel a job by ID
+      description: performs the cancellation of a job by its ID
+      operationId: cancelJob
+      parameters:
+        - name: id
+          in: path
+          description: Job ID
+          required: true
+          schema:
+            type: string
+            example: job-14257452
+      responses:
+        '200':
+          description: Job successfully canceled!
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Job successfully canceled!
+        '404':
+          description: Job not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Job not found
+
   /stock/{id}:
-    get:
+    patch:
       tags:
         - Stock
       summary: Increase stock by product ID
@@ -220,14 +313,14 @@ paths:
           description: Product ID
           required: true
           schema:
-            type: string
+            type: integer
+            format: int64
         - name: amount
           in: query
           description: Quantity to add to stock
           required: true
           schema:
             type: integer
-            default: 1
             minimum: 1
             maximum: 100
             example: 7
@@ -247,7 +340,7 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: integer
           format: int64
           description: Product ID
           example: 55L
@@ -264,6 +357,11 @@ components:
           format: int32
           description: Number of Products available
           example: 404
+        price:
+          type: number
+          format: currency
+          description: Price of Product unit
+          example: 12.5
         active:
           type: boolean
           description: Indicator whether product is active or not
@@ -290,6 +388,7 @@ components:
         - name
         - description
         - amount
+        - price
       type: object
       properties:
         name:
@@ -305,6 +404,11 @@ components:
           format: int32
           description: Number of Products available
           example: 404
+        price:
+          type: number
+          format: currency
+          description: Price of Product unit
+          example: 12.5
     UpdateProduct:
       type: object
       properties:
@@ -316,3 +420,20 @@ components:
           type: string
           description: Product description
           example: Argentine sweet orange
+        price:
+          type: number
+          format: currency
+          description: Price of Product unit
+          example: 12.5
+    LoadJob:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Job ID
+          example: job-14257452
+        scheduledDate:
+          type: string
+          format: date-time
+          description: Date and time to schedule the job
+          example: 2021-10-10T10:00:00

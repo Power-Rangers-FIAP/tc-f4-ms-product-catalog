@@ -9,16 +9,28 @@ spring:
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ms-produto
+    username: root
+    password: secret
+  jpa:
+    hibernate:
+      ddl-auto: update
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
   cloud:
     function:
       web:
         path: /api
 
+load:
+  input-path: C:\Users\Gabriel\Downloads\loadProducts
+
 server:
   port: 8081
-
-load:
-  input-path: C:\Users\Gabriel\Downloads\loads
 
 logging:
   level:
