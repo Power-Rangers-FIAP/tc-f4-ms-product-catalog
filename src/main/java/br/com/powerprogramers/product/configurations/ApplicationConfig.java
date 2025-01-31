@@ -9,14 +9,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 
-/** Project configuration class. */
+/** Configuration class for the application. */
 @Configuration
 public class ApplicationConfig {
 
   /**
-   * CreateProductUseCase instance configuration.
+   * Provides a CreateProductUseCase instance.
    *
-   * @return new CreateProductUseCase
+   * @return a new CreateProductUseCase instance
    */
   @Bean
   public CreateProductUseCase createProductUseCase() {
@@ -24,16 +24,21 @@ public class ApplicationConfig {
   }
 
   /**
-   * UpdateStockUseCase instance configuration.
+   * Provides an UpdateStockUseCase instance.
    *
-   * @param productService ProductService instance
-   * @return new UpdateStockUseCase
+   * @param productService the ProductService instance
+   * @return a new UpdateStockUseCase instance
    */
   @Bean
   public UpdateStockUseCase updateStockUseCase(ProductService productService) {
     return new UpdateStockUseCase(productService);
   }
 
+  /**
+   * Provides a TaskScheduler instance.
+   *
+   * @return a new TaskScheduler instance
+   */
   @Bean
   public TaskScheduler taskScheduler() {
     return new ConcurrentTaskScheduler(new ScheduledThreadPoolExecutor(20));

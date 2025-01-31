@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
-/** Class that represents the configuration of the batch job to load products. */
+/** Configuration class for the batch job to load products. */
 @Configuration
 @RequiredArgsConstructor
 public class LoadConfiguration {
@@ -45,9 +45,9 @@ public class LoadConfiguration {
   /**
    * Creates a job to load products.
    *
-   * @param initialStep initial step
-   * @param moveStepFiles
-   * @return
+   * @param initialStep the initial step of the job
+   * @param moveStepFiles the step to move processed files
+   * @return the configured job
    */
   @Bean
   public Job jobLoadProduct(
@@ -59,6 +59,13 @@ public class LoadConfiguration {
         .build();
   }
 
+  /**
+   * Creates the initial step of the job.
+   *
+   * @param reader the item reader
+   * @param writer the item writer
+   * @return the configured step
+   */
   @Bean
   public Step initialStep(
       @Qualifier("reader") ItemReader<ProductLoad> reader,
@@ -71,6 +78,12 @@ public class LoadConfiguration {
         .build();
   }
 
+  /**
+   * Creates a FlatFileItemReader to read product data from a CSV file.
+   *
+   * @param filePath the path of the file to read
+   * @return the configured item reader
+   */
   @Bean
   @StepScope
   public FlatFileItemReader<ProductLoad> reader(
@@ -86,6 +99,12 @@ public class LoadConfiguration {
         .build();
   }
 
+  /**
+   * Creates an ItemWriter to write product data to the database.
+   *
+   * @param dataSource the data source
+   * @return the configured item writer
+   */
   @Bean
   public ItemWriter<ProductLoad> writer(DataSource dataSource) {
     return new JdbcBatchItemWriterBuilder<ProductLoad>()
@@ -97,6 +116,11 @@ public class LoadConfiguration {
         .build();
   }
 
+  /**
+   * Creates a Tasklet to move processed files to a different directory.
+   *
+   * @return the configured tasklet
+   */
   @Bean
   public Tasklet moverArquivosTasklet() {
     return (contribution, chunkContext) -> {
@@ -121,19 +145,30 @@ public class LoadConfiguration {
     };
   }
 
-  private String newFileName(String fileName) {
-    ZoneId zoneId = ZoneId.systemDefault();
-    LocalDateTime localDateTime = LocalDateTime.now(zoneId);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-    String formattedDate = localDateTime.format(formatter);
-    return fileName.replace(".csv", "-processed-at-") + formattedDate + ".csv";
-  }
-
+  /**
+   * Creates the step to move processed files.
+   *
+   * @return the configured step
+   */
   @Bean
   public Step moveStepFiles() {
     return new StepBuilder("moveFile", jobRepository)
         .tasklet(moverArquivosTasklet(), transactionManager)
         .allowStartIfComplete(true)
         .build();
+  }
+
+  /**
+   * Generates a new file name with a timestamp.
+   *
+   * @param fileName the original file name
+   * @return the new file name
+   */
+  private String newFileName(String fileName) {
+    ZoneId zoneId = ZoneId.systemDefault();
+    LocalDateTime localDateTime = LocalDateTime.now(zoneId);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+    String formattedDate = localDateTime.format(formatter);
+    return fileName.replace(".csv", "-processed-at-") + formattedDate + ".csv";
   }
 }

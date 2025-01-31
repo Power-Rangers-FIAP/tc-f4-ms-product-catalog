@@ -2,20 +2,26 @@ package br.com.powerprogramers.product.domain.service.impl;
 
 import br.com.powerprogramers.product.domain.batch.ProductBatchExecutor;
 import br.com.powerprogramers.product.domain.dto.LoadJobDto;
-import br.com.powerprogramers.product.domain.exceptions.ProductException;
 import br.com.powerprogramers.product.domain.exceptions.ProductLoadJobException;
 import br.com.powerprogramers.product.domain.model.Load;
 import br.com.powerprogramers.product.domain.service.LoadService;
 import java.nio.file.Files;
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-/** LoadServiceImpl. */
+/** Class that controls the loading of products from a file. */
 @Service
 @RequiredArgsConstructor(onConstructor_ = @__(@Autowired))
 public class LoadServiceImpl implements LoadService {
@@ -31,8 +37,7 @@ public class LoadServiceImpl implements LoadService {
 
       Files.write(load.getFullPath(), load.getBinary());
     } catch (Exception e) {
-      throw new ProductException(
-          Instant.now(), HttpStatus.CONFLICT, e.getMessage(), "/products/load");
+      throw new ProductLoadJobException(e.getMessage());
     }
 
     this.productBatchExecutor.execute(load);

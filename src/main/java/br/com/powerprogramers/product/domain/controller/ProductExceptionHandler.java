@@ -1,15 +1,24 @@
 package br.com.powerprogramers.product.domain.controller;
 
-import br.com.powerprogramers.product.domain.exceptions.*;
+import br.com.powerprogramers.product.domain.exceptions.CreateProductUseCaseException;
+import br.com.powerprogramers.product.domain.exceptions.DominioException;
+import br.com.powerprogramers.product.domain.exceptions.ProductException;
+import br.com.powerprogramers.product.domain.exceptions.ProductLoadJobException;
+import br.com.powerprogramers.product.domain.exceptions.ProductLoadMoveFileException;
+import br.com.powerprogramers.product.domain.exceptions.ProductNotFoundException;
 import jakarta.annotation.Nullable;
 import jakarta.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -138,6 +147,16 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.valueOf(status.value()), ex.getBody().getDetail(), request));
   }
 
+  /**
+   * Handles HttpMessageNotReadableException and constructs a ResponseEntity with the appropriate
+   * error details.
+   *
+   * @param ex the exception that occurred due to the message not being readable (can be null)
+   * @param headers the HTTP headers for the response (can be null)
+   * @param status the HTTP status code for the response (can be null)
+   * @param request the web request during which the exception occurred (can be null)
+   * @return a ResponseEntity containing the error details and appropriate HTTP status code
+   */
   @Override
   protected ResponseEntity<Object> handleHttpMessageNotReadable(
       @Nullable HttpMessageNotReadableException ex,
@@ -168,6 +187,23 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
       ConstraintViolationException ex, WebRequest request) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(DominioException.from(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleMissingServletRequestParameter(
+      @Nullable MissingServletRequestParameterException ex,
+      @Nullable HttpHeaders headers,
+      @Nullable HttpStatusCode status,
+      @Nullable WebRequest request) {
+
+    if (ex == null || status == null || request == null) {
+      return generateServerErrorResponse();
+    }
+
+    String errorMessage = "The mandatory parameter '" + ex.getParameterName() + "' it is absent";
+
+    return ResponseEntity.status(status)
+        .body(DominioException.build(HttpStatus.valueOf(status.value()), errorMessage, request));
   }
 
   private ResponseEntity<Object> generateServerErrorResponse() {

@@ -17,7 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-/** Service class for the product. */
+/** Service class for product operations. */
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {

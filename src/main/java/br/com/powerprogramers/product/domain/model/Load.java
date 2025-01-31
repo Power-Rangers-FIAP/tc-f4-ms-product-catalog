@@ -17,8 +17,18 @@ public class Load {
   private final Path path;
   private final LocalDateTime dateTime;
 
-  public Load(MultipartFile multipartFile, String directory) throws IOException {
-    this.binary = multipartFile.getBytes();
+  /**
+   * Load constructor.
+   *
+   * @param multipartFile file to be loaded
+   * @param directory directory where the file will be saved
+   */
+  public Load(MultipartFile multipartFile, String directory) {
+    try {
+      this.binary = multipartFile.getBytes();
+    } catch (IOException e) {
+      throw new ProductLoadJobException(e.getMessage());
+    }
     this.dateTime = LocalDateTime.now();
     var nameAux = Objects.requireNonNull(multipartFile.getOriginalFilename());
     if (!nameAux.endsWith(".csv")) {
