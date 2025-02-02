@@ -1,16 +1,16 @@
 spring:
   application:
-    name: tech-challenge-f4-ms-produto
+    name: tc-f4-ms-product-catalog
   datasource:
     hikari:
-      pool-name: tech-challenge-f4-ms-produto
+      pool-name: tc-f4-ms-product-catalog
       maximum-pool-size: 5
       connection-test-query: SELECT 1
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/ms-produto
+    url: jdbc:postgresql://localhost:5432/ms-product
     username: root
     password: secret
   jpa:

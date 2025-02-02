@@ -2,6 +2,7 @@ package br.com.powerprogramers.product.domain.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -15,11 +16,9 @@ import br.com.powerprogramers.product.domain.mappers.ProductMapper;
 import br.com.powerprogramers.product.domain.model.Product;
 import br.com.powerprogramers.product.domain.repository.ProductRepository;
 import br.com.powerprogramers.product.domain.service.usecase.create.CreateProductUseCase;
-import java.math.BigDecimal;
+import br.com.powerprogramers.product.domain.utils.ProductHelper;
 import java.util.List;
 import java.util.Optional;
-
-import br.com.powerprogramers.product.domain.utils.ProductHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,34 +50,23 @@ class ProductServiceImplTest {
 
   @Test
   void mustFindProductByIdSuccessfully() {
-    Long productId = 1L;
-    ProductEntity productEntity =
-        ProductEntity.builder()
-            .id(productId)
-            .name("Orange")
-            .description("Argentine sweet orange")
-            .amount(100)
-            .price(BigDecimal.valueOf(12.5))
-            .active(true)
-            .build();
+    ProductEntity productEntity = ProductHelper.generatePRoductEntity(true);
 
-    when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
+    when(productRepository.findById(anyLong())).thenReturn(Optional.of(productEntity));
 
-    ProductDto result = productServiceImpl.findById(productId);
+    ProductDto result = productServiceImpl.findById(ProductHelper.ID);
 
     assertThat(result).isNotNull();
-    assertThat(result.getId()).isEqualTo(productId);
-    assertThat(result.getName()).isEqualTo("Orange");
-    assertThat(result.getDescription()).isEqualTo("Argentine sweet orange");
+    assertThat(result.getId()).isEqualTo(ProductHelper.ID);
+    assertThat(result.getName()).isEqualTo(ProductHelper.NAME);
+    assertThat(result.getDescription()).isEqualTo(ProductHelper.DESCRIPTION);
   }
 
   @Test
   void mustGenerateException_WhenFindProductById_WithInvalidProduct() {
-    Long productId = 1L;
+    when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-    when(productRepository.findById(productId)).thenReturn(Optional.empty());
-
-    assertThatThrownBy(() -> productServiceImpl.findById(productId))
+    assertThatThrownBy(() -> productServiceImpl.findById(ProductHelper.ID))
         .isInstanceOf(ProductNotFoundException.class)
         .hasMessage("product not found");
   }
@@ -86,15 +74,7 @@ class ProductServiceImplTest {
   @Test
   void mustFindAllProductsSuccessfully() {
     PageRequest pageRequest = PageRequest.of(0, 10);
-    ProductEntity productEntity =
-        ProductEntity.builder()
-            .id(1L)
-            .name("Orange")
-            .description("Argentine sweet orange")
-            .amount(100)
-            .price(BigDecimal.valueOf(12.5))
-            .active(true)
-            .build();
+    ProductEntity productEntity = ProductHelper.generatePRoductEntity(true);
     Page<ProductEntity> page = new PageImpl<>(List.of(productEntity), pageRequest, 1);
 
     when(productRepository.findAllProducts(pageRequest, null, null, null)).thenReturn(page);
@@ -103,7 +83,7 @@ class ProductServiceImplTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getItems()).hasSize(1);
-    assertThat(result.getItems().get(0).getName()).isEqualTo("Orange");
+    assertThat(result.getItems().get(0).getName()).isEqualTo(ProductHelper.NAME);
   }
 
   @Test
@@ -118,41 +98,36 @@ class ProductServiceImplTest {
     ProductDto result = productServiceImpl.save(createProductDto);
 
     assertThat(result).isNotNull();
-    assertThat(result.getName()).isEqualTo("Orange");
+    assertThat(result.getName()).isEqualTo(ProductHelper.NAME);
   }
 
   @Test
   void mustUpdateProductSuccessfully() {
-    Long productId = 1L;
-    UpdateProductDto updateProductDto = new UpdateProductDto();
-    updateProductDto.setName("Orange 2");
-    updateProductDto.setDescription("Argentine sweet orange");
-    updateProductDto.setPrice(BigDecimal.valueOf(25.0));
+    UpdateProductDto updateProductDto = ProductHelper.generateUpdateProductDto();
 
     Product product = ProductHelper.generateProduct();
 
-    when(productRepository.findById(productId))
+    when(productRepository.findById(anyLong()))
         .thenReturn(Optional.of(ProductMapper.INSTANCE.toEntity(product)));
     when(productRepository.save(any())).thenAnswer(p -> p.getArgument(0));
 
-    ProductDto result = productServiceImpl.update(productId, updateProductDto);
+    ProductDto result = productServiceImpl.update(ProductHelper.ID, updateProductDto);
 
     assertThat(result).isNotNull();
-    assertThat(result.getName()).isEqualTo("Orange 2");
-    assertThat(result.getAmount()).isEqualTo(150);
-    assertThat(result.getPrice()).isEqualTo(BigDecimal.valueOf(25.0));
+    assertThat(result.getName()).isEqualTo(updateProductDto.getName());
+    assertThat(result.getAmount()).isEqualTo(product.getAmount());
+    assertThat(result.getPrice()).isEqualTo(updateProductDto.getPrice());
   }
 
   @Test
   void mustActivateProductSuccessfully() {
-    Long productId = 1L;
     Product product = ProductHelper.generateProduct();
 
-    when(productRepository.findById(productId))
-            .thenReturn(Optional.of(ProductMapper.INSTANCE.toEntity(product)));
+    when(productRepository.findById(anyLong()))
+        .thenReturn(Optional.of(ProductMapper.INSTANCE.toEntity(product)));
     when(productRepository.save(any())).thenAnswer(p -> p.getArgument(0));
 
-    ProductDto result = productServiceImpl.activate(productId);
+    ProductDto result = productServiceImpl.activate(ProductHelper.ID);
 
     assertThat(result).isNotNull();
     assertThat(result.isActive()).isTrue();
@@ -160,14 +135,13 @@ class ProductServiceImplTest {
 
   @Test
   void mustDeactivateProductSuccessfully() {
-    Long productId = 1L;
     Product product = ProductHelper.generateProduct();
 
-    when(productRepository.findById(productId))
-            .thenReturn(Optional.of(ProductMapper.INSTANCE.toEntity(product)));
+    when(productRepository.findById(anyLong()))
+        .thenReturn(Optional.of(ProductMapper.INSTANCE.toEntity(product)));
     when(productRepository.save(any())).thenAnswer(p -> p.getArgument(0));
 
-    ProductDto result = productServiceImpl.deactivate(productId);
+    ProductDto result = productServiceImpl.deactivate(ProductHelper.ID);
 
     assertThat(result).isNotNull();
     assertThat(result.isActive()).isFalse();

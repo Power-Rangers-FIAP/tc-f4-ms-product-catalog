@@ -1,7 +1,7 @@
 package br.com.powerprogramers.product.domain.controller;
 
 import br.com.powerprogramers.product.domain.exceptions.CreateProductUseCaseException;
-import br.com.powerprogramers.product.domain.exceptions.DominioException;
+import br.com.powerprogramers.product.domain.exceptions.DomainException;
 import br.com.powerprogramers.product.domain.exceptions.ProductException;
 import br.com.powerprogramers.product.domain.exceptions.ProductLoadJobException;
 import br.com.powerprogramers.product.domain.exceptions.ProductLoadMoveFileException;
@@ -45,9 +45,9 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
         ProductLoadMoveFileException.class,
         ProductLoadJobException.class
       })
-  public ResponseEntity<DominioException> productExceptionHandler(
+  public ResponseEntity<DomainException> productExceptionHandler(
       ProductException ex, WebRequest request) {
-    return ResponseEntity.status(ex.getStatus()).body(DominioException.from(ex, request));
+    return ResponseEntity.status(ex.getStatus()).body(DomainException.from(ex, request));
   }
 
   /**
@@ -60,12 +60,12 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
    *     Request)
    */
   @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<DominioException> methodArgumentTypeMismatchException(
+  public ResponseEntity<DomainException> methodArgumentTypeMismatchException(
       MethodArgumentTypeMismatchException ex, WebRequest request) {
     String message =
         "Error converting %s with value of type %s".formatted(ex.getName(), ex.getValue());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(DominioException.from(HttpStatus.BAD_REQUEST, message, request));
+        .body(DomainException.from(HttpStatus.BAD_REQUEST, message, request));
   }
 
   /**
@@ -78,10 +78,10 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
    *     Request)
    */
   @ExceptionHandler(value = IllegalArgumentException.class)
-  public ResponseEntity<DominioException> illegalArgumentException(
+  public ResponseEntity<DomainException> illegalArgumentException(
       IllegalArgumentException ex, WebRequest request) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(DominioException.from(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
+        .body(DomainException.from(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
   }
 
   /**
@@ -117,7 +117,7 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
 
     return ResponseEntity.status(status)
         .body(
-            DominioException.build(HttpStatus.valueOf(status.value()), errors.toString(), request));
+            DomainException.build(HttpStatus.valueOf(status.value()), errors.toString(), request));
   }
 
   /**
@@ -143,7 +143,7 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
 
     return ResponseEntity.status(status)
         .body(
-            DominioException.build(
+            DomainException.build(
                 HttpStatus.valueOf(status.value()), ex.getBody().getDetail(), request));
   }
 
@@ -170,7 +170,7 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
 
     return ResponseEntity.status(status)
         .body(
-            DominioException.build(
+            DomainException.build(
                 HttpStatus.valueOf(status.value()), "Failed to read request", request));
   }
 
@@ -183,10 +183,10 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
    * @return a ResponseEntity containing the error details and the HTTP status code 400
    */
   @ExceptionHandler(value = ConstraintViolationException.class)
-  public ResponseEntity<DominioException> constraintViolationException(
+  public ResponseEntity<DomainException> constraintViolationException(
       ConstraintViolationException ex, WebRequest request) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(DominioException.from(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
+        .body(DomainException.from(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
   }
 
   @Override
@@ -203,13 +203,13 @@ public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
     String errorMessage = "The mandatory parameter '" + ex.getParameterName() + "' it is absent";
 
     return ResponseEntity.status(status)
-        .body(DominioException.build(HttpStatus.valueOf(status.value()), errorMessage, request));
+        .body(DomainException.build(HttpStatus.valueOf(status.value()), errorMessage, request));
   }
 
   private ResponseEntity<Object> generateServerErrorResponse() {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(
-            DominioException.build(
+            DomainException.build(
                 HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null));
   }
 }

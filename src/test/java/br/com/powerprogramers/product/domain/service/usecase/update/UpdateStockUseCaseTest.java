@@ -2,13 +2,13 @@ package br.com.powerprogramers.product.domain.service.usecase.update;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import br.com.powerprogramers.product.domain.dto.ProductDto;
 import br.com.powerprogramers.product.domain.exceptions.ProductNotFoundException;
 import br.com.powerprogramers.product.domain.service.ProductService;
-import java.math.BigDecimal;
-
+import br.com.powerprogramers.product.domain.utils.ProductHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,33 +35,25 @@ class UpdateStockUseCaseTest {
 
   @Test
   void mustUpdateInventorySuccessfully() {
-    Long productId = 1L;
-    ProductDto productDto = new ProductDto();
-    productDto.setId(productId);
-    productDto.setName("Orange");
-    productDto.setDescription("Argentine sweet orange");
-    productDto.setAmount(100);
-    productDto.setPrice(BigDecimal.valueOf(12.5));
+    ProductDto productDto = ProductHelper.generateProductDto(true);
 
-    when(productService.findById(productId)).thenReturn(productDto);
+    when(productService.findById(anyLong())).thenReturn(productDto);
 
-    ProductDto result = updateStockUseCase.execute(productId);
+    ProductDto result = updateStockUseCase.execute(ProductHelper.ID);
 
     assertThat(result).isNotNull();
-    assertThat(result.getId()).isEqualTo(productId);
-    assertThat(result.getName()).isEqualTo("Orange");
-    assertThat(result.getDescription()).isEqualTo("Argentine sweet orange");
-    assertThat(result.getAmount()).isEqualTo(100);
-    assertThat(result.getPrice()).isEqualTo(BigDecimal.valueOf(12.5));
+    assertThat(result.getId()).isEqualTo(ProductHelper.ID);
+    assertThat(result.getName()).isEqualTo(ProductHelper.NAME);
+    assertThat(result.getDescription()).isEqualTo(ProductHelper.DESCRIPTION);
+    assertThat(result.getAmount()).isEqualTo(ProductHelper.AMOUNT);
+    assertThat(result.getPrice()).isEqualTo(ProductHelper.PRICE);
   }
 
   @Test
   void mustGenerateException_WhenUpdateInventory_WithInvalidProduct() {
-    Long productId = 1L;
+    when(productService.findById(anyLong())).thenThrow(new ProductNotFoundException("/products"));
 
-    when(productService.findById(productId)).thenThrow(new ProductNotFoundException("/products"));
-
-    assertThatThrownBy(() -> updateStockUseCase.execute(productId))
+    assertThatThrownBy(() -> updateStockUseCase.execute(ProductHelper.ID))
         .isInstanceOf(ProductNotFoundException.class)
         .hasMessage("product not found");
   }

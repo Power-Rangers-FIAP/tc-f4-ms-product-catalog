@@ -1,4 +1,8 @@
-INSERT INTO product (id, name, description, price, amount,
+INSERT INTO product (name, description, price, amount,
                      active)
-VALUES (1, 'Orange', 'Argentine sweet orange', 10.5, 150,
+VALUES ('Orange', 'Argentine sweet orange', 10.5, 150,
         true);
+INSERT INTO product (name, description, price, amount,
+                     active)
+VALUES ('Strawberry', 'Beautiful red strawberries', 20.75, 2,
+        false);

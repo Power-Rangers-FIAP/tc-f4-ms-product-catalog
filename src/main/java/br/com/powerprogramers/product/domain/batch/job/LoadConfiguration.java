@@ -136,7 +136,7 @@ public class LoadConfiguration {
       if (archives != null) {
         for (File file : archives) {
           File arquivoDestino = new File(destinyFolder, newFileName(file.getName()));
-          if (!file.renameTo(arquivoDestino)) {
+          if (!renameFile(file, arquivoDestino)) {
             throw new ProductLoadMoveFileException(file.getName());
           }
         }
@@ -170,5 +170,16 @@ public class LoadConfiguration {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
     String formattedDate = localDateTime.format(formatter);
     return fileName.replace(".csv", "-processed-at-") + formattedDate + ".csv";
+  }
+
+  /**
+   * Renames a file.
+   *
+   * @param source the source file
+   * @param target the target file
+   * @return true if the file was renamed, false otherwise
+   */
+  protected boolean renameFile(File source, File target) {
+    return source.renameTo(target);
   }
 }

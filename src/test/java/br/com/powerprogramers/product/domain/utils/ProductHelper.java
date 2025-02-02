@@ -3,6 +3,7 @@ package br.com.powerprogramers.product.domain.utils;
 import br.com.powerprogramers.product.domain.dto.CreateProductDto;
 import br.com.powerprogramers.product.domain.dto.ProductDto;
 import br.com.powerprogramers.product.domain.dto.UpdateProductDto;
+import br.com.powerprogramers.product.domain.entity.ProductEntity;
 import br.com.powerprogramers.product.domain.model.Product;
 import java.math.BigDecimal;
 
@@ -23,7 +24,10 @@ public final class ProductHelper {
   }
 
   public static UpdateProductDto generateUpdateProductDto() {
-    return new UpdateProductDto().name(NAME + " updated").description(DESCRIPTION + " updated").price(PRICE.add(BigDecimal.valueOf(5)));
+    return new UpdateProductDto()
+        .name(NAME + " updated")
+        .description(DESCRIPTION + " updated")
+        .price(PRICE.add(BigDecimal.valueOf(5)));
   }
 
   public static ProductDto generateProductDto(boolean active) {
@@ -39,12 +43,12 @@ public final class ProductHelper {
   public static ProductDto generateProductDtoUpdated() {
     UpdateProductDto updateProductDto = generateUpdateProductDto();
     return new ProductDto()
-            .id(ID)
-            .name(updateProductDto.getName())
-            .description(updateProductDto.getDescription())
-            .amount(AMOUNT)
-            .price(updateProductDto.getPrice())
-            .active(true);
+        .id(ID)
+        .name(updateProductDto.getName())
+        .description(updateProductDto.getDescription())
+        .amount(AMOUNT)
+        .price(updateProductDto.getPrice())
+        .active(true);
   }
 
   public static Product generateProduct() {
@@ -59,5 +63,16 @@ public final class ProductHelper {
         .amount(AMOUNT)
         .price(PRICE)
         .active(true);
+  }
+
+  public static ProductEntity generatePRoductEntity(boolean active) {
+    return ProductEntity.builder()
+        .id(ID)
+        .name(NAME)
+        .description(DESCRIPTION)
+        .amount(AMOUNT)
+        .price(PRICE)
+        .active(active)
+        .build();
   }
 }

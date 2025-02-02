@@ -50,7 +50,7 @@ class ProductConsumerTest {
   }
 
   @Test
-  void mustThrowExceptionForInvalidAmount() {
+  void mustThrowException_WhenInvalidAmount() {
     ProductRequested productRequested = new ProductRequested(1L, 0);
 
     Consumer<ProductRequested> consumer = productConsumer.consumer();
@@ -60,5 +60,21 @@ class ProductConsumerTest {
         .hasMessageContaining("The amount cannot be negative or zero.");
 
     verify(stockService, never()).updateStock(anyLong(), anyInt());
+  }
+
+  @Test
+  void mustThrowException_WhenTotalAmountIsNegative() {
+    ProductRequested productRequested = new ProductRequested(1L, 155);
+
+    Consumer<ProductRequested> consumer = productConsumer.consumer();
+
+    when(stockService.updateStock(anyLong(), anyInt()))
+        .thenThrow(new IllegalArgumentException("The amount total cannot be negative."));
+
+    assertThatThrownBy(() -> consumer.accept(productRequested))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("The amount total cannot be negative.");
+
+    verify(stockService, times(1)).updateStock(anyLong(), anyInt());
   }
 }

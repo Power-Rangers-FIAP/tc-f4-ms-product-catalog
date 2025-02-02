@@ -13,7 +13,7 @@ import org.springframework.web.context.request.WebRequest;
  * @param message reason for the error
  * @param path Way of Error
  */
-public record DominioException(Instant timestamp, int status, String message, String path) {
+public record DomainException(Instant timestamp, int status, String message, String path) {
 
   /**
    * Builds a new instance of DominioException with the given parameters.
@@ -23,10 +23,10 @@ public record DominioException(Instant timestamp, int status, String message, St
    * @param request the web request
    * @return a new instance of DominioException
    */
-  public static DominioException build(
+  public static DomainException build(
       HttpStatusCode statusCode, String message, WebRequest request) {
     String path = request == null ? "" : request.getDescription(false).substring(4);
-    return new DominioException(Instant.now(), statusCode.value(), message, path);
+    return new DomainException(Instant.now(), statusCode.value(), message, path);
   }
 
   /**
@@ -36,8 +36,8 @@ public record DominioException(Instant timestamp, int status, String message, St
    * @param request WebRequest
    * @return a new DominioException
    */
-  public static DominioException from(ProductException ex, WebRequest request) {
-    return new DominioException(
+  public static DomainException from(ProductException ex, WebRequest request) {
+    return new DomainException(
         Instant.now(),
         ex.getStatus().value(),
         ex.getMessage(),
@@ -52,8 +52,8 @@ public record DominioException(Instant timestamp, int status, String message, St
    * @param request WebRequest
    * @return a new DominioException
    */
-  public static DominioException from(HttpStatus status, String message, WebRequest request) {
-    return new DominioException(
+  public static DomainException from(HttpStatus status, String message, WebRequest request) {
+    return new DomainException(
         Instant.now(), status.value(), message, request.getDescription(false).substring(4));
   }
 }

@@ -2,6 +2,7 @@ package br.com.powerprogramers.product.domain.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -10,7 +11,7 @@ import br.com.powerprogramers.product.domain.entity.ProductEntity;
 import br.com.powerprogramers.product.domain.exceptions.ProductNotFoundException;
 import br.com.powerprogramers.product.domain.repository.ProductRepository;
 import br.com.powerprogramers.product.domain.service.usecase.update.UpdateStockUseCase;
-import java.math.BigDecimal;
+import br.com.powerprogramers.product.domain.utils.ProductHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,22 +42,16 @@ class StockServiceImplTest {
   void mustUpdateStockSuccessfully() {
     Long productId = 1L;
     Integer amount = 50;
-    ProductDto productDto =
-        new ProductDto()
-            .id(productId)
-            .name("Orange")
-            .description("Argentine sweet orange")
-            .amount(100)
-            .price(BigDecimal.valueOf(12.5));
+    ProductDto productDto = ProductHelper.generateProductDto(true);
 
-    when(updateStockUseCase.execute(productId)).thenReturn(productDto);
+    when(updateStockUseCase.execute(anyLong())).thenReturn(productDto);
     when(productRepository.save(any(ProductEntity.class))).thenAnswer(p -> p.getArgument(0));
 
     ProductDto result = stockServiceImpl.updateStock(productId, amount);
 
     assertThat(result).isNotNull();
     assertThat(result.getId()).isEqualTo(productId);
-    assertThat(result.getAmount()).isEqualTo(150);
+    assertThat(result.getAmount()).isEqualTo(200);
   }
 
   @Test

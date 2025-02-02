@@ -4,8 +4,6 @@ import br.com.powerprogramers.product.api.LoadApi;
 import br.com.powerprogramers.product.domain.dto.LoadJobDto;
 import br.com.powerprogramers.product.domain.model.Load;
 import br.com.powerprogramers.product.domain.service.LoadService;
-
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
