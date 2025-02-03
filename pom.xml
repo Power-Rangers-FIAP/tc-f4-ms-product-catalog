@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>br.com.powerprogramers</groupId>
-    <artifactId>produto</artifactId>
+    <artifactId>product-catalog</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>tech-challenge-f4-ms-produto</name>
-    <description>tech-challenge-f4-ms-produto</description>
+    <name>tc-f4-ms-product-catalog</name>
+    <description>tech challenge fase 4 - FIAP</description>
     <url/>
     <licenses>
         <license/>
@@ -32,7 +32,7 @@
         <mapstruct.version>1.6.0</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <swagger-annotations.version>2.2.22</swagger-annotations.version>
-        <springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
+        <springdoc.version>2.8.4</springdoc.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
     <dependencies>
@@ -99,14 +99,9 @@
             <version>${mapstruct.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>${swagger-annotations.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
+            <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -151,6 +146,30 @@
             <artifactId>log-tracker</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <!-- Dependências do Gatling -->
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-app</artifactId>
+            <version>3.13.3</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling.highcharts</groupId>
+            <artifactId>gatling-charts-highcharts</artifactId>
+            <version>3.9.5</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- relatório de testes -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>2.23.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>2.23.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -189,6 +208,11 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
                             <version>${lombok-mapstruct-binding.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.swagger.core.v3</groupId>
+                            <artifactId>swagger-annotations</artifactId>
+                            <version>${swagger-annotations.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -252,6 +276,40 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>4.0.0.4121</version>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.15.2</version>
+                <configuration>
+                    <reportVersion>2.4.1</reportVersion>
+                    <resultsDirectory>${project.build.directory}/allure-results/</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -271,6 +329,21 @@
                             <excludes>
                                 <exclude>**/*Test.java</exclude>
                             </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>performance-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.gatling</groupId>
+                        <artifactId>gatling-maven-plugin</artifactId>
+                        <version>4.11.0</version>
+                        <configuration>
+                            <simulationClass>br.com.powerprogramers.product.domain.performance.PerformanceSimulation</simulationClass>
                         </configuration>
                     </plugin>
                 </plugins>

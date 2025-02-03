@@ -9,6 +9,7 @@ import static org.mockito.Mockito.spy;
 
 import br.com.powerprogramers.product.domain.exceptions.ProductLoadMoveFileException;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -32,14 +34,21 @@ class LoadConfigurationTest {
   @Mock private ChunkContext chunkContext;
 
   private LoadConfiguration loadConfiguration;
-  private String directory;
+  private static final String DIRECTORY = "src/test/resources/load";
+
+  @BeforeAll
+  static void beforeAll() throws IOException {
+    Path path = Paths.get(DIRECTORY);
+    if (!path.toFile().exists()) {
+      Files.createDirectory(path);
+    }
+  }
 
   @BeforeEach
   void setUp() {
     openMocks = MockitoAnnotations.openMocks(this);
-    directory = "src/test/resources/load";
     loadConfiguration = new LoadConfiguration(null, null);
-    ReflectionTestUtils.setField(loadConfiguration, "directory", directory);
+    ReflectionTestUtils.setField(loadConfiguration, "directory", DIRECTORY);
   }
 
   @AfterEach
@@ -49,7 +58,7 @@ class LoadConfigurationTest {
 
   @Test
   void testMoverArquivosTasklet_DestinyFolderDoesNotExist() throws Exception {
-    Path destinyPath = Paths.get(directory + "/processed");
+    Path destinyPath = Paths.get(DIRECTORY + "/processed");
     Files.deleteIfExists(destinyPath);
 
     RepeatStatus status =
@@ -61,7 +70,7 @@ class LoadConfigurationTest {
 
   @Test
   void testMoverArquivosTasklet_DestinyFolderExists() throws Exception {
-    Path destinyPath = Paths.get(directory + "/processed");
+    Path destinyPath = Paths.get(DIRECTORY + "/processed");
     Files.createDirectories(destinyPath);
 
     RepeatStatus status =
@@ -73,7 +82,7 @@ class LoadConfigurationTest {
 
   @Test
   void testMoverArquivosTasklet_NoCsvFiles() throws Exception {
-    File originFolder = new File(directory);
+    File originFolder = new File(DIRECTORY);
     for (File file : Objects.requireNonNull(originFolder.listFiles())) {
       if (file.getName().endsWith(".csv")) {
         assertTrue(file.delete());
@@ -88,7 +97,7 @@ class LoadConfigurationTest {
 
   @Test
   void testMoverArquivosTasklet_WithCsvFiles() throws Exception {
-    File originFolder = new File(directory);
+    File originFolder = new File(DIRECTORY);
     File csvFile = new File(originFolder, "test.csv");
 
     if (csvFile.createNewFile()) {
@@ -96,7 +105,7 @@ class LoadConfigurationTest {
           loadConfiguration.moverArquivosTasklet().execute(stepContribution, chunkContext);
       Optional<File> oFile =
           Arrays.stream(
-                  Objects.requireNonNull(Paths.get(directory + "/processed").toFile().listFiles()))
+                  Objects.requireNonNull(Paths.get(DIRECTORY + "/processed").toFile().listFiles()))
               .findFirst();
       File movedFile = oFile.orElse(null);
 
@@ -109,7 +118,7 @@ class LoadConfigurationTest {
 
   @Test
   void testMoverArquivosTasklet_FileCannotBeMoved() throws Exception {
-    File originFolder = new File(directory);
+    File originFolder = new File(DIRECTORY);
     File csvFile = new File(originFolder, "test.csv");
 
     if (csvFile.createNewFile()) {

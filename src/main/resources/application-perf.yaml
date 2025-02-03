@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+    defer-datasource-initialization: true
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+  cloud:
+    function:
+      web:
+        path: /api
+  docker:
+    compose:
+      enabled: false
+  sql:
+    init:
+      mode: always
+
+load:
+  input-path: C:\Users\Gabriel\Downloads\loadProducts
+
+server:
+  port: 8081

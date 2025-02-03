@@ -24,7 +24,7 @@ Developed as part of the **Java Architecture and Development** postgraduate cour
 
 ## 📦 Project Structure
 
-```java
+```markdown
 📦 br.com.powerprogramers.product
 ├── configuration          // Application Settings
 ├── 🎯 domain
@@ -34,7 +34,7 @@ Developed as part of the **Java Architecture and Development** postgraduate cour
 │   │
 │   ├── consumer           // Consumer logic
 │   ├── controller         // REST controllers
-│   ├── entiy              // Database models
+│   ├── entity             // Database models
 │   ├── exceptions         // Custom exceptions
 │   ├── mappers            // Object mapping
 │   ├── model              // Models
@@ -67,15 +67,14 @@ To run the project locally, follow the steps below:
     ```bash
     mvn clean install -U
     
-    ```
-    
+    ``` 
+
 4. **Start the application locally:**
     
     ```bash
     mvn spring-boot:run
     
     ```
-    
 
 ## 🧪 How to do the tests
 
@@ -92,6 +91,20 @@ To run the project locally, follow the steps below:
     mvn test -P integration-text
     
     ``` 
+
+- **To perform the performance tests:**
+
+- With the docker running, run the command below: 
+
+    ```bash
+    mvn gatling:test -P performance-test
+    
+    ``` 
+
+## 📄 Relatório de Performance
+
+After performing the performance test, you can see an execution report opening the index.html file within `target/gatling/performancesimulation-\<dataexecução>/index.html \`
+example of the path: `target/gatling/performancesimulation-20241209162646899/index.html`
 
 ## 🧪 API Endpoint
 

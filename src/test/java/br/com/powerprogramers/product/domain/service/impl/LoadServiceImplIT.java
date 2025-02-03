@@ -10,7 +10,8 @@ import br.com.powerprogramers.product.domain.exceptions.ProductLoadJobException;
 import br.com.powerprogramers.product.domain.model.Load;
 import br.com.powerprogramers.product.domain.service.LoadService;
 import br.com.powerprogramers.product.domain.utils.LoadHelper;
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
@@ -35,11 +36,14 @@ class LoadServiceImplIT {
 
     loadService.load(load);
 
+    File[] files = Path.of(load.getPath() + "/processed").toFile().listFiles();
+    assertThat(files).isNotEmpty();
+
     LoadHelper.deleteTestFiles(load);
   }
 
   @Test
-  void mustGenerateException_WhenCarryProduct() throws IOException {
+  void mustGenerateException_WhenCarryProduct() {
     Load load = LoadHelper.generateFileWithError();
 
     assertThatThrownBy(() -> this.loadService.load(load))
@@ -48,7 +52,7 @@ class LoadServiceImplIT {
   }
 
   @Test
-  void mustScheduleJobSuccessfully() throws IOException {
+  void mustScheduleJobSuccessfully() {
     LocalDateTime startTime = LocalDateTime.now().plusDays(1);
     Load load = LoadHelper.generateFileSuccessfully();
 
@@ -60,7 +64,7 @@ class LoadServiceImplIT {
   }
 
   @Test
-  void mustGenerateException_WhenScheduleJob_WithInvalidDate() throws IOException {
+  void mustGenerateException_WhenScheduleJob_WithInvalidDate() {
     LocalDateTime startTime = LocalDateTime.now().minusDays(1);
     Load load = LoadHelper.generateFileSuccessfully();
 
@@ -70,7 +74,7 @@ class LoadServiceImplIT {
   }
 
   @Test
-  void mustCancelJobSuccessfully() throws IOException {
+  void mustCancelJobSuccessfully() {
     LocalDateTime startTime = LocalDateTime.now().plusDays(1);
     Load load = LoadHelper.generateFileSuccessfully();
 

@@ -1,7 +1,6 @@
 load:
   input-path: src/test/resources/load
 
-
 spring:
   datasource:
     url: jdbc:h2:mem:test-db
@@ -31,5 +30,6 @@ spring:
     function:
       web:
         path: /api
+
 server:
   port: 8081
