@@ -50,13 +50,20 @@ public class PerformanceSimulation extends Simulation {
           .get("/products/activate/%s".formatted("#{productId}"))
           .check(status().is(200));
 
+  ActionBuilder updateStock =
+      http("update stock")
+          .patch("/stock/%s".formatted("#{productId}"))
+          .queryParam("amount", 10)
+          .check(status().is(200));
+
   ScenarioBuilder scenarioCrudProduct =
       scenario("product crud")
           .exec(registerProduct)
           .exec(findProduct)
           .exec(updateProduct)
           .exec(deactivateProduct)
-          .exec(activateProduct);
+          .exec(activateProduct)
+          .exec(updateStock);
 
   {
     setUp(
@@ -66,6 +73,6 @@ public class PerformanceSimulation extends Simulation {
                 rampUsersPerSec(5).to(1).during(Duration.ofSeconds(5))))
         .protocols(httpProtocolBuilder)
         .assertions(
-            global().responseTime().max().lt(300), global().failedRequests().count().is(0L));
+            global().responseTime().max().lt(200), global().failedRequests().count().is(0L));
   }
 }
