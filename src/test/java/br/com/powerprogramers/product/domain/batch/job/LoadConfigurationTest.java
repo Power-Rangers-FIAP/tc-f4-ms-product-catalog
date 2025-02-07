@@ -1,7 +1,8 @@
 package br.com.powerprogramers.product.domain.batch.job;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
@@ -125,14 +126,17 @@ class LoadConfigurationTest {
       LoadConfiguration spyLoadConfiguration = spy(loadConfiguration);
       doReturn(false).when(spyLoadConfiguration).renameFile(any(File.class), any(File.class));
 
-      assertThatThrownBy(
-              () ->
-                  spyLoadConfiguration
-                      .moverArquivosTasklet()
-                      .execute(stepContribution, chunkContext))
-          .isInstanceOf(ProductLoadMoveFileException.class);
+      ProductLoadMoveFileException exception =
+          assertThrows(
+              ProductLoadMoveFileException.class, () -> executeTasklet(spyLoadConfiguration));
+
+      assertEquals("Unable to move file: %s".formatted(csvFile.getName()), exception.getMessage());
 
       assertTrue(csvFile.delete());
     }
+  }
+
+  private void executeTasklet(LoadConfiguration spyLoadConfiguration) throws Exception {
+    spyLoadConfiguration.moverArquivosTasklet().execute(stepContribution, chunkContext);
   }
 }

@@ -56,7 +56,7 @@ class LoadServiceImplTest {
   }
 
   @Test
-  void mustGenerateException_WhenCarryProduct() throws IOException {
+  void mustGenerateException_WhenCarryProduct() {
     Load load = LoadHelper.generateFileWithError();
 
     assertThatThrownBy(() -> this.loadService.load(load))
@@ -65,7 +65,7 @@ class LoadServiceImplTest {
   }
 
   @Test
-  void mustScheduleJobSuccessfully() throws IOException {
+  void mustScheduleJobSuccessfully() {
     LocalDateTime startTime = LocalDateTime.now().plusDays(1);
     Load load = LoadHelper.generateFileSuccessfully();
 
@@ -77,7 +77,7 @@ class LoadServiceImplTest {
   }
 
   @Test
-  void mustGenerateException_WhenScheduleJob_WithInvalidDate() throws IOException {
+  void mustGenerateException_WhenScheduleJob_WithInvalidDate() {
     LocalDateTime startTime = LocalDateTime.now().minusDays(1);
     Load load = LoadHelper.generateFileSuccessfully();
 
@@ -87,7 +87,7 @@ class LoadServiceImplTest {
   }
 
   @Test
-  void mustCancelJobSuccessfully() throws IOException {
+  void mustCancelJobSuccessfully() {
     LocalDateTime startTime = LocalDateTime.now().plusDays(1);
     Load load = LoadHelper.generateFileSuccessfully();
 
