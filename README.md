@@ -94,12 +94,19 @@ To run the project locally, follow the steps below:
 
 - **To perform the performance tests:**
 
-- With the docker running, run the command below: 
+    >  With the docker running, run the command below: 
 
     ```bash
     mvn gatling:test -P performance-test
     
     ``` 
+
+- **To perfom the system text:**
+    
+    ```bash
+    mvn test -P system-text
+    
+    ```
 
 ## 📄 Relatório de Performance
 
