@@ -43,6 +43,10 @@ public class LoadHelper {
     return new MockMultipartFile("file", fileName, "text/csv", new byte[0]);
   }
 
+  public static File generateFile() throws IOException {
+    return generateFileFromRoot();
+  }
+
   private static File generateFileFromRoot() throws IOException {
     Path products =
         Paths.get(new FileSystemResource("").getFile().getAbsolutePath() + "/products.csv");
@@ -55,8 +59,8 @@ public class LoadHelper {
     return new MockMultipartFile("file", fileName, "text/csv", new FileInputStream(file));
   }
 
-  public static void deleteTestFiles(Load load) {
-    Path filePath = Paths.get(load.getPath() + "/processed");
+  public static void deleteTestFiles(String path) {
+    Path filePath = Paths.get(Paths.get(path) + "/processed");
     try (Stream<Path> sPaths = Files.list(filePath)) {
       sPaths.forEach(
           f -> {

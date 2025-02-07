@@ -50,7 +50,7 @@ class ProductServiceImplTest {
 
   @Test
   void mustFindProductByIdSuccessfully() {
-    ProductEntity productEntity = ProductHelper.generatePRoductEntity(true);
+    ProductEntity productEntity = ProductHelper.generateProductEntity(true);
 
     when(productRepository.findById(anyLong())).thenReturn(Optional.of(productEntity));
 
@@ -74,7 +74,7 @@ class ProductServiceImplTest {
   @Test
   void mustFindAllProductsSuccessfully() {
     PageRequest pageRequest = PageRequest.of(0, 10);
-    ProductEntity productEntity = ProductHelper.generatePRoductEntity(true);
+    ProductEntity productEntity = ProductHelper.generateProductEntity(true);
     Page<ProductEntity> page = new PageImpl<>(List.of(productEntity), pageRequest, 1);
 
     when(productRepository.findAllProducts(pageRequest, null, null, null)).thenReturn(page);

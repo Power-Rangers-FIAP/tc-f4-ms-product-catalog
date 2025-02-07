@@ -1,4 +1,4 @@
-package br.com.powerprogramers.product.domain.performance;
+package br.com.powerprogramers.product.performance;
 
 import static io.gatling.javaapi.core.CoreDsl.StringBody;
 import static io.gatling.javaapi.core.CoreDsl.constantUsersPerSec;

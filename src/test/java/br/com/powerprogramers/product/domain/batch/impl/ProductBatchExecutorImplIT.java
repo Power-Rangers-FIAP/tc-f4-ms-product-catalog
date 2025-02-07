@@ -30,7 +30,7 @@ class ProductBatchExecutorImplIT {
   void mustLoadSuccessfully() throws IOException {
     Load load = LoadHelper.generateFileSuccessfullyFromRoot();
     assertDoesNotThrow(() -> productBatchExecutor.execute(load));
-    LoadHelper.deleteTestFiles(load);
+    LoadHelper.deleteTestFiles(load.getPath().toString());
   }
 
   @Test
@@ -42,7 +42,7 @@ class ProductBatchExecutorImplIT {
         .isInstanceOf(ProductLoadJobException.class)
         .hasMessageStartingWith("Error processing file:");
 
-    LoadHelper.deleteTestFiles(load);
+    LoadHelper.deleteTestFiles(load.getPath().toString());
   }
 
   @Test

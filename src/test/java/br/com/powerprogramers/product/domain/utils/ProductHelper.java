@@ -65,7 +65,7 @@ public final class ProductHelper {
         .active(true);
   }
 
-  public static ProductEntity generatePRoductEntity(boolean active) {
+  public static ProductEntity generateProductEntity(boolean active) {
     return ProductEntity.builder()
         .id(ID)
         .name(NAME)

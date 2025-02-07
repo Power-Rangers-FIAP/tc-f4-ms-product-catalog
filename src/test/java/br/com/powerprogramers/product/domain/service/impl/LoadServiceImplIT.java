@@ -39,7 +39,7 @@ class LoadServiceImplIT {
     File[] files = Path.of(load.getPath() + "/processed").toFile().listFiles();
     assertThat(files).isNotEmpty();
 
-    LoadHelper.deleteTestFiles(load);
+    LoadHelper.deleteTestFiles(load.getPath().toString());
   }
 
   @Test
