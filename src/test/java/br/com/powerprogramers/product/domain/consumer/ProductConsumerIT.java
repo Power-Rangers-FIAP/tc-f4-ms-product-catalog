@@ -65,7 +65,7 @@ class ProductConsumerIT {
 
   @Test
   void mustThrowException_WhenTotalAmountIsNegative() {
-    var erroMessage = "The amount total cannot be negative.";
+    var erroMessage = "The total purchase cannot be more than the stock total.";
     ProductRequested productRequested = new ProductRequested(1L, 155);
 
     var msg =

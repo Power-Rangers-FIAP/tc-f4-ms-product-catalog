@@ -57,7 +57,7 @@ public class Product {
    */
   public void updateAmount(Integer amount) {
     if (this.amount + amount < 0) {
-      throw new IllegalArgumentException("The amount total cannot be negative.");
+      throw new IllegalArgumentException("The total purchase cannot be more than the stock total.");
     }
     this.amount += amount;
   }
