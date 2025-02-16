@@ -27,7 +27,7 @@ spring:
         path: /api
 
 load:
-  input-path: C:\Users\Gabriel\Downloads\loadProducts
+  input-path: ${USERPROFILE}\Downloads\loadProducts
 
 server:
   port: 8081

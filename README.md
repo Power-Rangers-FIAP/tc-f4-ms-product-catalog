@@ -44,6 +44,10 @@ Developed as part of the **Java Architecture and Development** postgraduate cour
 └── 🚀 ProductBatchApplication.java
 ```
 
+## Introducing microservice
+
+Link: [Tech Challenge F4 - MS Produto - Introducing video](https://www.youtube.com/watch?v=dD4ZjZ7fmhY)
+
 ## ▶️ Como Executar o Projeto
 
 To run the project locally, follow the steps below:
@@ -117,6 +121,23 @@ example of the path: `target/gatling/performancesimulation-20241209162646899/ind
 
 The API can be explored and tested using Swagger. The documentation is available at:
 [`Swagger`](http://localhost:8081/swagger-ui/index.html)
+
+## Load data
+
+You can configure the path where the loaded files are stored`application.yaml` on the property `load.input-path`:
+
+```yaml
+load:
+  input-path: ${USERPROFILE}\Downloads\loadProducts
+```
+
+## Csv file data
+
+The csv file must have the following columns without a header:
+
+```csv  
+name,description,amount,price,active
+```
 
 ## 👥 contribute
 
