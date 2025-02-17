@@ -46,7 +46,7 @@ Developed as part of the **Java Architecture and Development** postgraduate cour
 
 ## Introducing microservice
 
-Link: [Tech Challenge F4 - MS Produto - Introducing video](https://www.youtube.com/watch?v=dD4ZjZ7fmhY)
+Link: [Tech Challenge F4 - MS Produto - Introducing video](https://www.youtube.com/watch?v=kGPE7fFuiC8)
 
 ## ▶️ Como Executar o Projeto
 
